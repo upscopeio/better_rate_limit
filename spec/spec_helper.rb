@@ -1,4 +1,5 @@
 require "bundler/setup"
+require "active_support/core_ext/numeric/time"
 require "rate_limit"
 
 RSpec.configure do |config|

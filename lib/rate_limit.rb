@@ -1,6 +1,9 @@
-require "rate_limit/version"
+require 'action_controller'
 
-module RateLimit
-  class Error < StandardError; end
-  # Your code goes here...
+module ActionController
+  autoload :RateLimit, 'action_controller/rate_limit'
+end
+
+ActiveSupport.on_load(:action_controller) do
+  include ActionController::RateLimit
 end

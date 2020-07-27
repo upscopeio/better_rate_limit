@@ -1,7 +1,7 @@
 require_relative 'lib/rate_limit/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "rate-limit"
+  spec.name          = "rate_limit"
   spec.version       = RateLimit::VERSION
   spec.authors       = ["Pablo Fonseca", "Joe d'Elia"]
   spec.email         = ["pablo@upscope.io", "joe@upscope.io"]
@@ -24,4 +24,7 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
+
+  spec.add_dependency "redis", ">= 3.3"
+  spec.add_dependency "actionpack", ">= 5.0"
 end
