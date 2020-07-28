@@ -54,7 +54,7 @@ module ActionController
 
       key = ['controller_throttle', limit.name, limit.max, limit.every, scope].join(':')
 
-      RateLimit::Throttle.allow? key, limit: limit.max, time_window: limit.every
+      ::RateLimit::Throttle.allow? key, limit: limit.max, time_window: limit.every
     end
   end
 end

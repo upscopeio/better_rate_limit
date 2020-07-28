@@ -9,13 +9,19 @@ module RateLimit
   RSpec.describe Configurable do
     before do
       FakeClass.configure do |config|
-        config.notify_method = -> { 2 + 2 }
+        config.app_name = 'Foo'
+        config.notifier = {
+          klass: FakeClass,
+          channel: '#foo'
+        }
       end
     end
 
     describe '.configure' do
       it 'sets the values of Configuration class' do
-        expect(FakeClass.config.notify_method).not_to be_nil
+        expect(FakeClass.config.app_name).to eq 'Foo'
+        expect(FakeClass.config.notifier[:klass]).to eq FakeClass
+        expect(FakeClass.config.notifier[:channel]).to eq '#foo'
       end
     end
 

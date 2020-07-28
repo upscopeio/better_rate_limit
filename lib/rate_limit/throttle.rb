@@ -3,12 +3,10 @@
 require 'active_support/core_ext/numeric/time'
 require 'active_support/core_ext/time/calculations'
 require 'rate_limit/redis_connection'
-require 'rate_limit/configurable'
 
 module RateLimit
   module Throttle
     include RedisConnection
-    include Configurable
 
     class << self
       def throttle(key, limit:, time_window:)
@@ -42,7 +40,10 @@ module RateLimit
       alias allow? throttle
 
       def notify(key)
-        self.class.config.notify_method.call(key)
+        RateLimit.config.notifier[:klass].notify! "#{RateLimit.config.app_name} rate limiting",
+                                                   nil, "The `#{key}` rate limit is now failing!",
+                                                   icon: 'oncoming_police_car',
+                                                   channel: RateLimit.config.notifier[:channel]
       end
     end
   end

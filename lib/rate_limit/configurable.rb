@@ -17,7 +17,7 @@ module RateLimit
     end
 
     class Configuration
-      attr_accessor :notify_method
+      attr_accessor :app_name, :notifier, :redis_client
     end
   end
 end
