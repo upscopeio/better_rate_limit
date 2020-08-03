@@ -40,10 +40,7 @@ module RateLimit
       alias allow? throttle
 
       def notify(key)
-        RateLimit.config.notifier[:klass].notify! "#{RateLimit.config.app_name} rate limiting",
-                                                   nil, "The `#{key}` rate limit is now failing!",
-                                                   icon: 'oncoming_police_car',
-                                                   channel: RateLimit.config.notifier[:channel]
+        ActiveSupport::Notifications.instrument 'rate_limit.notify', { rate_limit_key: key }
       end
     end
   end
