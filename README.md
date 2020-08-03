@@ -32,7 +32,7 @@ end
 Implement your own notifier logic by subscribing to the `rate_limit.notifier` event
 
 ```ruby
-ActionSupport::Notifications.subscribe 'rate_limit.notifier' do |_name, _start, _finish, _id, payload|
+ActionSupport::Notifications.subscribe /rate_limit/ do |_name, _start, _finish, _id, payload|
   # Your Notifier logic goes here
   # The payload param will return the rate_limit_key
   # e.g ( payload => { rate_limit_key: 'controller_throttle:auth/session:10:900:127.0.0.1' } )
