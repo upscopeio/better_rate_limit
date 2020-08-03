@@ -10,7 +10,7 @@ module RateLimit
 
     module ClassMethods
       def redis_client
-        @redis_client ||= RateLimit.config.redis_client
+        @redis_client ||= Redis.new(url: ENV.fetch('REDIS_URL', 'redis://localhost:6379'))
       end
     end
   end
