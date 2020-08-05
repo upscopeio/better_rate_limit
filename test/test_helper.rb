@@ -4,6 +4,7 @@ require 'bundler/setup'
 require 'minitest/autorun'
 require 'mocha/minitest'
 require 'timecop'
+require 'mock_redis'
 
 require 'active_support'
 

@@ -11,6 +11,10 @@ class UsersController < ApplicationController
 end
 
 class UsersControllerRateLimitTest < ActionController::TestCase
+  def setup
+    BetterRateLimit::Throttle.instance_variable_set(:@redis_client, MockRedis.new)
+  end
+
   tests UsersController
 
   def test_method_rate_limit_is_defined

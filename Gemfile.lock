@@ -40,6 +40,7 @@ GEM
     mini_portile2 (2.4.0)
     minitest (5.14.1)
     mocha (1.11.2)
+    mock_redis (0.25.0)
     nokogiri (1.10.10)
       mini_portile2 (~> 2.4.0)
     pry (0.13.1)
@@ -70,6 +71,7 @@ PLATFORMS
 DEPENDENCIES
   better_rate_limit!
   mocha
+  mock_redis
   pry
   rails-controller-testing
   rake (~> 12.0)

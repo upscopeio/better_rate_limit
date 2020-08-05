@@ -12,5 +12,6 @@ end
 group :test do
   gem "timecop"
   gem "mocha"
+  gem "mock_redis"
   gem "rails-controller-testing"
 end
