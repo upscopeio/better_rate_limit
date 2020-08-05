@@ -9,3 +9,8 @@ group :development, :test do
   gem "pry"
 end
 
+group :test do
+  gem "timecop"
+  gem "mocha"
+  gem "rails-controller-testing"
+end

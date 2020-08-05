@@ -29,7 +29,7 @@ module BetterRateLimit
           passing = first.to_time(:utc) < time_window.ago
 
           unless passing
-            notify(key) unless redis_client.exists('failing-rate-limits:' + key)
+            notify(key) unless redis_client.exists?('failing-rate-limits:' + key)
             redis_client.setex('failing-rate-limits:' + key, time_window.to_i, '1')
           end
 
