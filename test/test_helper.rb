@@ -3,6 +3,7 @@
 require 'bundler/setup'
 require 'minitest/autorun'
 require 'mocha/minitest'
+require 'timecop'
 
 require 'active_support'
 

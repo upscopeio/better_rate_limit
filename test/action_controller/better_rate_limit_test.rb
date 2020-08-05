@@ -31,4 +31,16 @@ class UsersControllerRateLimitTest < ActionController::TestCase
 
     assert_equal 429, @response.status
   end
+
+  def test_rate_limit_after_1_minute
+    3.times { get :index }
+
+    assert_equal 429, @response.status
+
+    Timecop.travel(2.minutes) do
+      get :index
+
+      assert_equal 200, @response.status
+    end
+  end
 end
