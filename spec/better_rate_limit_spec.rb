@@ -1,6 +1,6 @@
-RSpec.describe RateLimit do
+RSpec.describe BetterRateLimit do
   it "has a version number" do
-    expect(RateLimit::VERSION).not_to be nil
+    expect(BetterRateLimit::VERSION).not_to be nil
   end
 
   it "does something useful" do

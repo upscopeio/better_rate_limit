@@ -1,6 +1,6 @@
 require "bundler/setup"
 require "active_support/core_ext/numeric/time"
-require "rate_limit"
+require "better_rate_limit"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

@@ -1,8 +1,8 @@
 require 'ostruct'
-require 'rate_limit/throttle'
+require 'better_rate_limit/throttle'
 
 module ActionController
-  module RateLimit
+  module BetterRateLimit
     extend ActiveSupport::Concern
 
     module ClassMethods
@@ -54,7 +54,7 @@ module ActionController
 
       key = ['controller_throttle', limit.name, limit.max, limit.every, scope].join(':')
 
-      ::RateLimit::Throttle.allow? key, limit: limit.max, time_window: limit.every
+      ::BetterRateLimit::Throttle.allow? key, limit: limit.max, time_window: limit.every
     end
   end
 end

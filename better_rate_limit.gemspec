@@ -1,14 +1,14 @@
-require_relative 'lib/rate_limit/version'
+require_relative 'lib/better_rate_limit/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "rate_limit"
-  spec.version       = RateLimit::VERSION
+  spec.name          = "better_rate_limit"
+  spec.version       = BetterRateLimit::VERSION
   spec.authors       = ["Pablo Fonseca", "Joe d'Elia"]
   spec.email         = ["pablofonseca777@gmail.com", "joe@delia.is"]
 
   spec.summary       = %q{Rate limit requests}
   spec.description   = %q{Adds rate limit for requests}
-  spec.homepage      = "https://github.com/upscopeio/rate_limit"
+  spec.homepage      = "https://github.com/upscopeio/better_rate_limit"
   spec.required_ruby_version = Gem::Requirement.new(">= 2.3.0")
 
   spec.metadata["homepage_uri"] = spec.homepage

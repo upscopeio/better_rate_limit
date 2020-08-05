@@ -2,9 +2,9 @@
 
 require 'active_support/core_ext/numeric/time'
 require 'active_support/core_ext/time/calculations'
-require 'rate_limit/redis_connection'
+require 'better_rate_limit/redis_connection'
 
-module RateLimit
+module BetterRateLimit
   module Throttle
     include RedisConnection
 

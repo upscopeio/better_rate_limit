@@ -2,7 +2,7 @@
 
 require 'redis'
 
-module RateLimit
+module BetterRateLimit
   module RedisConnection
     def self.included(host)
       host.extend ClassMethods
