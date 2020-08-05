@@ -4,7 +4,7 @@ Gem::Specification.new do |spec|
   spec.name          = "rate_limit"
   spec.version       = RateLimit::VERSION
   spec.authors       = ["Pablo Fonseca", "Joe d'Elia"]
-  spec.email         = ["pablo@upscope.io", "joe@upscope.io"]
+  spec.email         = ["pablofonseca777@gmail.com", "joe@delia.is"]
 
   spec.summary       = %q{Rate limit requests}
   spec.description   = %q{Adds rate limit for requests}
