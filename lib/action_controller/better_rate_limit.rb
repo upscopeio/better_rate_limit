@@ -34,14 +34,22 @@ module ActionController
     protected
 
     def perform_rate_limiting
-      return if self.class.all_rate_limits.map { |r| under_rate_limit?(r) }.all?(&:true?)
+      return if self.class.all_rate_limits.map { |r| under_rate_limit?(r) }.all? { |r| r === true }
 
-      return json error: 'Too many requests', status: :too_many_requests if json?
+      return render json: { error: 'Too many requests' }, status: :too_many_requests if json?
 
-      render file: 'public/429.html', status: :too_many_requests, layout: false
+      send_file 'public/429.html', status: :too_many_requests
     end
 
     private
+
+    def json?
+      request.xhr? || request.format === :json
+    end
+
+    def real_ip
+      request.headers['X-Forwarded-For'].try(:split, ',').try(:[], -2..-2).try(:first).try(:strip)
+    end
 
     def under_rate_limit?(limit)
       if limit.controller_path == controller_path

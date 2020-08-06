@@ -4,8 +4,14 @@ source "https://rubygems.org"
 gemspec
 
 gem "rake", "~> 12.0"
-gem "rspec", "~> 3.0"
 
 group :development, :test do
-  gem "byebug"
+  gem "pry"
+end
+
+group :test do
+  gem "timecop"
+  gem "mocha"
+  gem "mock_redis"
+  gem "rails-controller-testing"
 end
