@@ -38,7 +38,7 @@ module ActionController
 
       return render json: { error: 'Too many requests' }, status: :too_many_requests if json?
 
-      send_file 'public/429.html', status: :too_many_requests
+      render file: 'public/429.html', status: :too_many_requests, layout: false
     end
 
     private
