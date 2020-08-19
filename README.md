@@ -8,7 +8,7 @@ Welcome to your new gem! In this directory, you'll find the files you need to be
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'better_rate_limit', git: 'https://github.com/upscopeio/better_rate_limit'
+gem 'better_rate_limit'
 ```
 
 And then execute:
