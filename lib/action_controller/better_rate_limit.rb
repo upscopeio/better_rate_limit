@@ -49,6 +49,9 @@ module ActionController
       return if rate_limits.empty?
 
       rate_limits.each do |rate_limit|
+        should_clear = rate_limit.clear_if.is_a?(Proc) ? instance_exec(&rate_limit.clear_if) : send(rate_limit.clear_if)
+        next unless should_clear
+
         scope = rate_limit.scope.is_a?(Proc) ? instance_exec(&rate_limit.scope) : send(rate_limit.scope)
         scope = scope.to_param if scope.respond_to?(:to_param)
         ::BetterRateLimit::Throttle.clear(rate_limit.key(scope))
@@ -68,12 +71,12 @@ module ActionController
     def under_rate_limit?(limit)
       if limit.has_if_condition?
         if_condition = limit._if.is_a?(Proc) ? instance_exec(&limit._if) : send(limit._if)
-        return false unless if_condition
+        return true unless if_condition
       end
 
       if limit.has_unless_condition?
         unless_condition = limit._unless.is_a?(Proc) ? instance_exec(&limit._unless) : send(limit._unless)
-        return false if unless_condition
+        return true if unless_condition
       end
 
       if limit.controller_path_is?(controller_path)
