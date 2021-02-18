@@ -1,20 +1,21 @@
 require 'ostruct'
 require 'better_rate_limit/throttle'
+require 'better_rate_limit/limit'
 
 module ActionController
   module BetterRateLimit
     extend ActiveSupport::Concern
 
     module ClassMethods
-      def rate_limit(max, every:, name: nil, scope: -> { real_ip }, only: [], except: [])
-        rate_limits << OpenStruct.new({
-                                        max: max,
-                                        every: every,
-                                        name: name || controller_path,
-                                        scope: scope,
-                                        only: only,
-                                        except: except,
-                                        controller_path: controller_path
+      def rate_limit(max, options)
+        rate_limits << Limit.build(max, controller_path, {
+                                        if: options[:if],
+                                        unless: options[:unless],
+                                        every: options[:every],
+                                        name: options[:name] || controller_path,
+                                        scope: options[:scope] || -> { real_ip },
+                                        only: options[:only] || [],
+                                        except: options[:except] || []
                                       })
 
         before_action :perform_rate_limiting
@@ -52,7 +53,17 @@ module ActionController
     end
 
     def under_rate_limit?(limit)
-      if limit.controller_path == controller_path
+      if limit.has_if_condition?
+        if_condition = limit._if.is_a?(Proc) ? instance_exec(&limit._if) : send(limit._if)
+        return false unless if_condition
+      end
+
+      if limit.has_unless_condition?
+        unless_condition = limit._unless.is_a?(Proc) ? instance_exec(&limit._unless) : send(limit._unless)
+        return false if unless_condition
+      end
+
+      if limit.controller_path_is?(controller_path)
         return true if action_name.to_sym.in?([limit.except].flatten)
         return true if !limit.only.empty? && !action_name.to_sym.in?([limit.only].flatten)
       end
