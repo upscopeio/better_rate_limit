@@ -1,23 +1,26 @@
 require 'ostruct'
 require 'better_rate_limit/throttle'
+require 'better_rate_limit/limit'
 
 module ActionController
   module BetterRateLimit
     extend ActiveSupport::Concern
 
     module ClassMethods
-      def rate_limit(max, every:, name: nil, scope: -> { real_ip }, only: [], except: [])
-        rate_limits << OpenStruct.new({
-                                        max: max,
-                                        every: every,
-                                        name: name || controller_path,
-                                        scope: scope,
-                                        only: only,
-                                        except: except,
-                                        controller_path: controller_path
+      def rate_limit(max, options)
+        rate_limits << Limit.build(max, controller_path, {
+                                        if: options[:if],
+                                        unless: options[:unless],
+                                        every: options[:every],
+                                        name: options[:name] || controller_path,
+                                        scope: options[:scope] || -> { real_ip },
+                                        only: options[:only] || [],
+                                        except: options[:except] || [],
+                                        clear_if: options[:clear_if]
                                       })
 
         before_action :perform_rate_limiting
+        after_action :clear_keys
       end
 
       def rate_limits
@@ -41,6 +44,20 @@ module ActionController
       render file: 'public/429.html', status: :too_many_requests, layout: false
     end
 
+    def clear_keys
+      rate_limits = self.class.all_rate_limits.filter(&:clear_if_present?)
+      return if rate_limits.empty?
+
+      rate_limits.each do |rate_limit|
+        should_clear = rate_limit.clear_if.is_a?(Proc) ? instance_exec(&rate_limit.clear_if) : send(rate_limit.clear_if)
+        next unless should_clear
+
+        scope = rate_limit.scope.is_a?(Proc) ? instance_exec(&rate_limit.scope) : send(rate_limit.scope)
+        scope = scope.to_param if scope.respond_to?(:to_param)
+        ::BetterRateLimit::Throttle.clear(rate_limit.key(scope))
+      end
+    end
+
     private
 
     def json?
@@ -52,7 +69,17 @@ module ActionController
     end
 
     def under_rate_limit?(limit)
-      if limit.controller_path == controller_path
+      if limit.has_if_condition?
+        if_condition = limit._if.is_a?(Proc) ? instance_exec(&limit._if) : send(limit._if)
+        return true unless if_condition
+      end
+
+      if limit.has_unless_condition?
+        unless_condition = limit._unless.is_a?(Proc) ? instance_exec(&limit._unless) : send(limit._unless)
+        return true if unless_condition
+      end
+
+      if limit.controller_path_is?(controller_path)
         return true if action_name.to_sym.in?([limit.except].flatten)
         return true if !limit.only.empty? && !action_name.to_sym.in?([limit.only].flatten)
       end
@@ -60,9 +87,7 @@ module ActionController
       scope = limit.scope.is_a?(Proc) ? instance_exec(&limit.scope) : send(limit.scope)
       scope = scope.to_param if scope.respond_to?(:to_param)
 
-      key = ['controller_throttle', limit.name, limit.max, limit.every, scope].join(':')
-
-      ::BetterRateLimit::Throttle.allow? key, limit: limit.max, time_window: limit.every
+      ::BetterRateLimit::Throttle.allow? limit.key(scope), limit: limit.max, time_window: limit.every
     end
   end
 end
