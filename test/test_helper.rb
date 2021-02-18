@@ -14,6 +14,7 @@ require "better_rate_limit"
 BetterRateLimit::Routes = ActionDispatch::Routing::RouteSet.new
 BetterRateLimit::Routes.draw do
   resources :users
+  resources :teams
   resources :conditional_if
   resources :conditional_unless
 end

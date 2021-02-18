@@ -49,6 +49,10 @@ class Limit
     @options[:scope]
   end
 
+  def clear_if
+    @options[:clear_if]
+  end
+
   def clear_if_present?
     @options[:clear_if].present?
   end
