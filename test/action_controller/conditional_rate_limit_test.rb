@@ -39,7 +39,6 @@ class ConditionalIfUsersControllerRateLimitTest < ActionController::TestCase
     parsed_body = JSON.parse(@response.body, symbolize_names: true)
 
     assert_equal 429, @response.status
-    assert_equal "Too many requests", parsed_body[:error]
   end
 
   def test_conditional_if_false_rate_limit
@@ -51,7 +50,7 @@ class ConditionalIfUsersControllerRateLimitTest < ActionController::TestCase
 
     get :index
 
-    assert_equal 429, @response.status
+    assert_equal 200, @response.status
   end
 end
 
@@ -61,10 +60,7 @@ class ConditionaUnlessUsersControllerRateLimitTest < ActionController::TestCase
   def test_conditional_unless_rate_limit_2_requests_1_minute_json
     get :index, xhr: true
 
-    parsed_body = JSON.parse(@response.body, symbolize_names: true)
-
-    assert_equal 429, @response.status
-    assert_equal "Too many requests", parsed_body[:error]
+    assert_equal 200, @response.status
   end
 
   def test_conditional_unless_false_rate_limit
