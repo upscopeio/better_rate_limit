@@ -1,6 +1,6 @@
 class Limit
   def self.build(max, controller_path, options)
-    options.assert_valid_keys(:if, :unless, :every, :name, :scope, :only, :except)
+    options.assert_valid_keys(:if, :unless, :every, :name, :scope, :only, :except, :clear_if)
     new(max, controller_path, {
       if: options[:if],
       unless: options[:unless],
@@ -8,7 +8,8 @@ class Limit
       name: options[:name],
       scope: options[:scope],
       only: options[:only],
-      except: options[:except]
+      except: options[:except],
+      clear_if: options[:clear_if]
     })
   end
 
@@ -48,6 +49,10 @@ class Limit
     @options[:scope]
   end
 
+  def clear_if_present?
+    @options[:clear_if].present?
+  end
+
   def has_if_condition?
     _if.present?
   end
@@ -58,5 +63,9 @@ class Limit
 
   def controller_path_is?(controller_path)
     self.controller_path == controller_path
+  end
+
+  def key(key_scope)
+    ['controller_throttle', name, max, every, key_scope].join(':')
   end
 end

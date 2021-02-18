@@ -15,10 +15,12 @@ module ActionController
                                         name: options[:name] || controller_path,
                                         scope: options[:scope] || -> { real_ip },
                                         only: options[:only] || [],
-                                        except: options[:except] || []
+                                        except: options[:except] || [],
+                                        clear_if: options[:clear_if]
                                       })
 
         before_action :perform_rate_limiting
+        after_action :clear_keys
       end
 
       def rate_limits
@@ -40,6 +42,17 @@ module ActionController
       return render json: { error: 'Too many requests' }, status: :too_many_requests if json?
 
       render file: 'public/429.html', status: :too_many_requests, layout: false
+    end
+
+    def clear_keys
+      rate_limits = self.class.all_rate_limits.filter(&:clear_if_present?)
+      return if rate_limits.empty?
+
+      rate_limits.each do |rate_limit|
+        scope = rate_limit.scope.is_a?(Proc) ? instance_exec(&rate_limit.scope) : send(rate_limit.scope)
+        scope = scope.to_param if scope.respond_to?(:to_param)
+        ::BetterRateLimit::Throttle.clear(rate_limit.key(scope))
+      end
     end
 
     private
@@ -71,9 +84,7 @@ module ActionController
       scope = limit.scope.is_a?(Proc) ? instance_exec(&limit.scope) : send(limit.scope)
       scope = scope.to_param if scope.respond_to?(:to_param)
 
-      key = ['controller_throttle', limit.name, limit.max, limit.every, scope].join(':')
-
-      ::BetterRateLimit::Throttle.allow? key, limit: limit.max, time_window: limit.every
+      ::BetterRateLimit::Throttle.allow? limit.key(scope), limit: limit.max, time_window: limit.every
     end
   end
 end

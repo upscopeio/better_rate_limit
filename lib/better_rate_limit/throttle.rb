@@ -37,6 +37,11 @@ module BetterRateLimit
         end
       end
 
+      def clear(key)
+        redis_client.del(key)
+        redis_client.del("failing-rate-limits:#{key}")
+      end
+
       alias allow? throttle
 
       def notify(key)
