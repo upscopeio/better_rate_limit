@@ -21,10 +21,13 @@ module BetterRateLimit
           true
         else
           first = redis_client.lpop(key)
+
           redis_client.multi do
             redis_client.rpush key, now
             redis_client.expire key, time_window.to_i
           end
+
+          return false unless first
 
           passing = first.to_time(:utc) < time_window.ago
 
