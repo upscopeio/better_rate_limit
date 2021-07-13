@@ -10,6 +10,8 @@ module BetterRateLimit
 
     class << self
       def throttle(key, limit:, time_window:)
+        return true if BetterRateLimit.configuration.ignore
+
         now = Time.now.utc
         timestamps_count = redis_client.llen key
 

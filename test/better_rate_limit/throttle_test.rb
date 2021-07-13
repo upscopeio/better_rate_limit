@@ -17,6 +17,16 @@ class ThrottleTest < Minitest::Test
     Timecop.return
   end
 
+  def test_do_not_throttle_if_ignore_is_set
+    BetterRateLimit.configure do |config|
+      config.ignore = true
+    end
+
+    assert_equal true, @subject.throttle('foo', limit: 2, time_window: 1.hour)
+
+    BetterRateLimit.reset_configuration
+  end
+
   def test_adds_current_timestamp_to_redis_list
     key = 'foo'
     timestamps_list = -> { @redis.lrange key, 0, -1 }
