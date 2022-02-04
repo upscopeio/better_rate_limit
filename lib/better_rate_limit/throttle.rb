@@ -16,17 +16,17 @@ module BetterRateLimit
         timestamps_count = redis_client.llen key
 
         if timestamps_count < limit
-          redis_client.multi do
-            redis_client.rpush key, now
-            redis_client.expire key, time_window.to_i
+          redis_client.multi do |pipeline|
+            pipeline.rpush key, now
+            pipeline.expire key, time_window.to_i
           end
           true
         else
           first = redis_client.lpop(key)
 
-          redis_client.multi do
-            redis_client.rpush key, now
-            redis_client.expire key, time_window.to_i
+          redis_client.multi do |pipeline|
+            pipeline.rpush key, now
+            pipeline.expire key, time_window.to_i
           end
 
           return false unless first
