@@ -1,12 +1,19 @@
 # frozen_string_literal: true
 
 require 'test_helper'
+require 'active_support'
 
 class ThrottleTest < Minitest::Test
   def setup
     @subject = BetterRateLimit::Throttle
-    @subject.instance_variable_set(:@redis_client, MockRedis.new)
-    @redis = @subject.redis_client
+    BetterRateLimit.configure do |config|
+      config.redis_client = MockRedis.new
+    end
+    @redis = BetterRateLimit.configuration.redis_client
+  end
+
+  def teardown
+    BetterRateLimit.reset_configuration
   end
 
   def add_keys_to_redis
@@ -23,8 +30,6 @@ class ThrottleTest < Minitest::Test
     end
 
     assert_equal true, @subject.throttle('foo', limit: 2, time_window: 1.hour)
-
-    BetterRateLimit.reset_configuration
   end
 
   def test_adds_current_timestamp_to_redis_list
@@ -65,5 +70,20 @@ class ThrottleTest < Minitest::Test
 
     Timecop.travel(first.to_time(:utc) + 7.hours)
     assert_equal true, @subject.throttle('foo-throttle', limit: 5, time_window: 6.hours)
+  end
+
+  def test_raise_when_redis_client_is_nil
+    BetterRateLimit::Throttle.instance_variable_set(:@redis_client, nil)
+    BetterRateLimit.configure do |config|
+      config.redis_client = nil
+    end
+
+    assert_raises(MissingRedisConfigError, 'Redis client not set') do
+      @subject.throttle('foo', limit: 2, time_window: 1.hour)
+    end
+
+    BetterRateLimit.configure do |config|
+      config.redis_client = MockRedis.new
+    end
   end
 end

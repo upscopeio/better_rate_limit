@@ -2,6 +2,12 @@
 
 require 'redis'
 
+class MissingRedisConfigError < StandardError
+  def initialize
+    super 'Redis client not set'
+  end
+end
+
 module BetterRateLimit
   module RedisConnection
     def self.included(host)
@@ -10,7 +16,7 @@ module BetterRateLimit
 
     module ClassMethods
       def redis_client
-        @redis_client ||= Redis.new(url: ENV.fetch('REDIS_URL', 'redis://localhost:6379'))
+        @redis_client ||= BetterRateLimit.configuration.redis_client
       end
     end
   end
