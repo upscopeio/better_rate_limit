@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'active_support'
 
 class ThrottleTest < Minitest::Test
   def setup
