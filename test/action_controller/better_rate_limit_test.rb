@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "test_helper"
+require 'test_helper'
 
 class UsersController < ApplicationController
   rate_limit 2, every: 1.minute, only: :index
@@ -12,7 +12,13 @@ end
 
 class UsersControllerRateLimitTest < ActionController::TestCase
   def setup
-    BetterRateLimit::Throttle.instance_variable_set(:@redis_client, MockRedis.new)
+    BetterRateLimit.configure do |config|
+      config.redis_client = MockRedis.new
+    end
+  end
+
+  def teardown
+    BetterRateLimit.reset_configuration
   end
 
   tests UsersController
@@ -27,7 +33,7 @@ class UsersControllerRateLimitTest < ActionController::TestCase
     parsed_body = JSON.parse(@response.body, symbolize_names: true)
 
     assert_equal 429, @response.status
-    assert_equal "Too many requests", parsed_body[:error]
+    assert_equal 'Too many requests', parsed_body[:error]
   end
 
   def test_rate_limit_2_requests_1_minute

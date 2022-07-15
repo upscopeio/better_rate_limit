@@ -10,6 +10,7 @@ module BetterRateLimit
 
     class << self
       def throttle(key, limit:, time_window:)
+        raise MissingRedisConfigError unless redis_client
         return true if BetterRateLimit.configuration.ignore
 
         now = Time.now.utc

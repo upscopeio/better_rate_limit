@@ -9,6 +9,13 @@ end
 class RedisConnectionTest < Minitest::Test
   def setup
     @subject = FakeModule
+    BetterRateLimit.configure do |config|
+      config.redis_client = MockRedis.new
+    end
+  end
+
+  def teardown
+    BetterRateLimit.reset_configuration
   end
 
   def test_class_should_have_redis_connection
@@ -16,6 +23,6 @@ class RedisConnectionTest < Minitest::Test
   end
 
   def test_redis_client
-    assert_instance_of Redis, @subject.redis_client
+    assert_instance_of MockRedis, @subject.redis_client
   end
 end

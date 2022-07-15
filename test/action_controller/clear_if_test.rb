@@ -16,7 +16,13 @@ end
 
 class TeamsControllerTest < ActionController::TestCase
   def setup
-    ::BetterRateLimit::Throttle.instance_variable_set(:@redis_client, MockRedis.new)
+    BetterRateLimit.configure do |config|
+      config.redis_client = MockRedis.new
+    end
+  end
+
+  def teardown
+    BetterRateLimit.reset_configuration
   end
 
   tests TeamsController
