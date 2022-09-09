@@ -2,7 +2,7 @@
 
 module BetterRateLimit
   class Configuration
-    attr_accessor :ignore, :redis_client
+    attr_accessor :ignore, :redis_client, :proxies_to_trust
 
     def initialize
       @ignore = false

@@ -9,15 +9,15 @@ module ActionController
     module ClassMethods
       def rate_limit(max, options)
         rate_limits << Limit.build(max, controller_path, {
-                                        if: options[:if],
-                                        unless: options[:unless],
-                                        every: options[:every],
-                                        name: options[:name] || controller_path,
-                                        scope: options[:scope] || -> { real_ip },
-                                        only: options[:only] || [],
-                                        except: options[:except] || [],
-                                        clear_if: options[:clear_if]
-                                      })
+                                     if: options[:if],
+                                     unless: options[:unless],
+                                     every: options[:every],
+                                     name: options[:name] || controller_path,
+                                     scope: options[:scope] || -> { real_ip },
+                                     only: options[:only] || [],
+                                     except: options[:except] || [],
+                                     clear_if: options[:clear_if]
+                                   })
 
         before_action :perform_rate_limiting
         after_action :clear_keys
@@ -61,11 +61,12 @@ module ActionController
     private
 
     def json?
-      request.xhr? || request.format === :json
+      request.xhr? || request.format == :json
     end
 
     def real_ip
-      request.headers['X-Forwarded-For'].try(:split, ',').try(:[], -2..-2).try(:first).try(:strip)
+      request.headers['X-Forwarded-For'].try(:split, ',').try(:last,
+                                                              ::BetterRateLimit.configuration.proxies_to_trust).try(:first).try(:strip)
     end
 
     def under_rate_limit?(limit)

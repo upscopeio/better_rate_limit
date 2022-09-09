@@ -13,4 +13,11 @@ class ConfigurationTest < Minitest::Test
 
     assert_equal true, configuration.ignore
   end
+
+  def test_configuration_proxies_to_trust_option
+    configuration = BetterRateLimit::Configuration.new
+    configuration.proxies_to_trust = 1
+
+    assert_equal 1, configuration.proxies_to_trust
+  end
 end
