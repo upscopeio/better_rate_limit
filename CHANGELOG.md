@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.2.1](https://github.com/upscopeio/better_rate_limit/compare/v0.2.0...v0.2.1) (2022-10-17)
+
+
+### Bug Fixes
+
+* Downgrade actionpack to 5.2.8.1 ([e32e408](https://github.com/upscopeio/better_rate_limit/commit/e32e40890600984913f62ca651441503f2d30272))
+
 ## [0.2.0](https://github.com/upscopeio/better_rate_limit/compare/v0.1.2...v0.2.0) (2022-10-17)
 
 
